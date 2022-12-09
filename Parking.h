@@ -8,7 +8,7 @@ namespace sdds
 	class Parking
 	{
 		int m_noOfSpots;
-		Vehicle* m_parkingSpots[MAX_NUM_SPOTS];
+		Vehicle* m_parkingSpots[MAX_NUM_SPOTS]; //static array of pointers to Vehicle objects
 		int m_noOfParkedVehicles;
 		char* m_fileName;
 		Menu* parkingMenu;

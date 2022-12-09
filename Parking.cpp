@@ -108,6 +108,11 @@ namespace sdds
 			parkingMenu = nullptr;
 			delete selectMenu;
 			selectMenu = nullptr;
+			for(int i = 0; i < m_noOfSpots; i++){
+				delete m_parkingSpots[i]; //access to Vehicle pointer at index i of m_parkingSpots and delete
+											// dynamically allocated memory on heap linked by this Vehicle pointer
+				m_parkingSpots[i] = nullptr;
+			}
 		}
 		
 	};
@@ -181,6 +186,7 @@ namespace sdds
 		}
 		int choice = selectMenu->run();
 		Vehicle* v = nullptr;
+		bool fd = false; //found
 		switch (choice) {
 		case 1:
 			// cout << "---------------------------------" << endl;
@@ -189,15 +195,24 @@ namespace sdds
 			v = new Car();
 			v->setCsv(false);
 			v->read();
+			cout << endl;
 			for(int i = 0; i < m_noOfSpots; i++){
 				if(m_parkingSpots[i] == nullptr){
-					m_parkingSpots[i] = v;
+					fd = true;
+					m_parkingSpots[i] = v; //parking
 					m_parkingSpots[i]->setParkingSpot(i+1);
 					m_noOfParkedVehicles++;
 					cout << "Parking Ticket" << endl;
 					m_parkingSpots[i]->write();
+					cout << endl;
 					break;
 				}
+			}
+			if(!fd){
+				delete v;
+				v = nullptr;
+			}else{
+				fd = false;
 			}
 			break;
 		case 2:
@@ -207,15 +222,25 @@ namespace sdds
 			v = new Motorcycle();
 			v->setCsv(false);
 			v->read();
+			cout << endl;
+			fd = false;
 			for(int i = 0; i < m_noOfSpots; i++){
 				if(m_parkingSpots[i] == nullptr){
+					fd = true;
 					m_parkingSpots[i] = v;
 					m_parkingSpots[i]->setParkingSpot(i+1);
 					m_noOfParkedVehicles++;
 					cout << "Parking Ticket" << endl;
 					m_parkingSpots[i]->write();
+					cout << endl;
 					break;
 				}
+			}
+			if(fd){
+				fd = false;
+			}else{
+				delete v;
+				v = nullptr;
 			}
 			break;
 		case 3:
@@ -247,6 +272,10 @@ namespace sdds
 			}
 		}
 		bool found = false;
+		for(int j = 0; licence[j] != '\0'; j++){
+			licence[j] = toupper(licence[j]);
+		}
+
 		int i = 0;
 		for(; i < m_noOfSpots; i++){
 			if(m_parkingSpots[i] != nullptr){
@@ -297,6 +326,10 @@ namespace sdds
 			}
 		}
 		bool found = false;
+		for(int j = 0; licence[j] != '\0'; j++){
+			licence[j] = toupper(licence[j]);
+		}	
+
 		int i = 0;
 		for(; i < m_noOfSpots; i++){
 			if(m_parkingSpots[i] != nullptr){
@@ -395,7 +428,7 @@ namespace sdds
 			}else{
 				int i = 0;
 				char c;
-				while (infile.eof() && i < m_noOfSpots) //if haven't read to the end of the file
+				while (!infile.eof() && m_noOfParkedVehicles <= m_noOfSpots) //if haven't read to the end of the file
 				{
 					infile >> c;
 					infile.ignore();
@@ -404,12 +437,12 @@ namespace sdds
 						flag = true;
 						break;
 					}
-					if(c == 'M'){
+					if(c == 'M' || c == 'm'){
 						v = new Motorcycle();
 						v->setCsv(true);
 						v->read(infile);
 					}else{
-						if(c == 'C'){
+						if(c == 'C' || c == 'c'){
 							v = new Car();
 							v->setCsv(true);
 							v->read(infile);
@@ -426,6 +459,7 @@ namespace sdds
 					}else{
 						m_parkingSpots[i] = v;
 						i++;
+						m_noOfParkedVehicles++;
 					}
 				}
 			}
