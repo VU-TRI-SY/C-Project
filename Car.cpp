@@ -90,8 +90,14 @@ namespace sdds
 		}
 		else {
 			Vehicle::write(ostr);
+			//C,3,QWE123,BMW 320 CSV mode
+			//Not CSV mode
+			//Vehicle type: Car
+			//Licence Plate: QWE123
+			//Make and model: BMW 320
+			//Parking Spot Number: 3
 			if (this->isCsv()) {
-				ostr << m_carwash << endl;
+				ostr << m_carwash << endl; 
 			}
 			else {
 				if (m_carwash) {

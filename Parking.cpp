@@ -180,7 +180,7 @@ namespace sdds
 	};
 
 	void Parking::parkVehice() {
-		if(m_noOfParkedVehicles == MAX_NUM_SPOTS){
+		if(m_noOfParkedVehicles == m_noOfSpots){
 			cout << "Parking is full";
 			return;
 		}
@@ -271,6 +271,7 @@ namespace sdds
 				break;
 			}
 		}
+		cout << endl;
 		bool found = false;
 		for(int j = 0; licence[j] != '\0'; j++){
 			licence[j] = toupper(licence[j]);
@@ -287,12 +288,15 @@ namespace sdds
 		}
 		if(found){
 			cout << "Returning:" << endl;
+			m_parkingSpots[i]->setCsv(false);
 			m_parkingSpots[i]->write();
 			delete m_parkingSpots[i];
 			m_parkingSpots[i] = nullptr;
+			m_noOfParkedVehicles--;
 		}else{
 			cout << "License plate " << licence << " Not found" << endl;
 		}
+		cout << endl;
 	};
 
 	void Parking::listParkedVehice() {
@@ -301,6 +305,7 @@ namespace sdds
 		// cout << "---------------------------------" << endl << endl;
 		for(int i = 0; i < m_noOfSpots; i++){
 			if(m_parkingSpots[i] != nullptr){
+				m_parkingSpots[i]->setCsv(false);
 				m_parkingSpots[i]->write();
 				cout << "-------------------------------" << endl;
 			}
@@ -325,6 +330,7 @@ namespace sdds
 				break;
 			}
 		}
+		cout << endl;
 		bool found = false;
 		for(int j = 0; licence[j] != '\0'; j++){
 			licence[j] = toupper(licence[j]);
@@ -341,10 +347,12 @@ namespace sdds
 		}
 		if(found){
 			cout << "Vechicle found:" << endl;
+			m_parkingSpots[i]->setCsv(false);
 			m_parkingSpots[i]->write();
 		}else{
 			cout << "License plate " << licence << " Not found" << endl;
 		}
+		cout << endl;
 	};
 
 	bool Parking::closeParking() {
@@ -363,10 +371,10 @@ namespace sdds
 				cout << "Closing Parking" << endl;
 				for(int i = 0; i < m_noOfSpots; i++){
 					if(m_parkingSpots[i] != nullptr){
-						cout << "Towing request" << endl;
+						cout << endl << "Towing request" << endl;
 						cout << "*********************" << endl;
+						m_parkingSpots[i]->setCsv(false);
 						m_parkingSpots[i]->write();
-						cout << endl;
 						delete m_parkingSpots[i];
 						m_parkingSpots[i] = nullptr;
 					}
@@ -426,7 +434,6 @@ namespace sdds
 			{
 				flag = true;
 			}else{
-				int i = 0;
 				char c;
 				while (!infile.eof() && m_noOfParkedVehicles <= m_noOfSpots) //if haven't read to the end of the file
 				{
@@ -439,7 +446,7 @@ namespace sdds
 					}
 					if(c == 'M' || c == 'm'){
 						v = new Motorcycle();
-						v->setCsv(true);
+						v->setCsv(true); //set to mode CSV
 						v->read(infile);
 					}else{
 						if(c == 'C' || c == 'c'){
@@ -457,8 +464,7 @@ namespace sdds
 						v = nullptr;
 						break;
 					}else{
-						m_parkingSpots[i] = v;
-						i++;
+						m_parkingSpots[v->getParkingSpot()-1] = v;
 						m_noOfParkedVehicles++;
 					}
 				}
